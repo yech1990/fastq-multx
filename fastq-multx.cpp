@@ -99,8 +99,10 @@ int bnodecomp(const void *a, const void *b)
     return strcmp(((bnode*)a)->seq,((bnode*)b)->seq);
 };
 static float pickmaxpct=0.10;
-void getbcfromheader(struct fq *fqin, struct fq *bc, char **s2=NULL, int *ns2=NULL);
-void getbcfromheader(char *s, int *ns, char **q=NULL, char **s2=NULL, int *ns2=NULL);
+void getbcfromheader(struct fq *fqin, struct fq *bc, char **s2=NULL,
+                     int *ns2=NULL);
+void getbcfromheader(char *s, int *ns, char **q=NULL, char **s2=NULL,
+                     int *ns2=NULL);
 
 int ignore;
 size_t ignore_st;
@@ -255,7 +257,9 @@ switch (c) t:
 
     if (f_n != f_oarg)
     {
-        fprintf(stderr, "Error: number of input files (%d) must match number of output files following '-o'.\n", f_n);
+        fprintf(stderr,
+                "Error: number of input files (%d) must match number of output files following '-o'.\n",
+                f_n);
         return 1;
     }
 
@@ -283,7 +287,8 @@ switch (c) t:
     if (list)
     {
         // use a list of barcode groups... determine the best set, then use the determined set
-        struct bcg *bcg = (struct bcg *) malloc(sizeof(*bcg) * MAX_GROUP_NUM * MAX_BARCODE_NUM);
+        struct bcg *bcg = (struct bcg *) malloc(sizeof(*bcg) * MAX_GROUP_NUM *
+                                                MAX_BARCODE_NUM);
         if (!bcg)
         {
             fprintf(stderr, "Out of memory\n");
@@ -301,7 +306,8 @@ switch (c) t:
         // read barcode groups
         int ok;
 
-        while (bgcnt < (MAX_GROUP_NUM * MAX_BARCODE_NUM) && (ok = read_line(lin, bcg[bgcnt].b.id)))
+        while (bgcnt < (MAX_GROUP_NUM * MAX_BARCODE_NUM) &&
+                (ok = read_line(lin, bcg[bgcnt].b.id)))
         {
             if (ok <= 0) break;
             if (bcg[bgcnt].b.id.s[0]=='#') continue;
@@ -312,7 +318,8 @@ switch (c) t:
             {
                 if (bgcnt==0)
                 {
-                    fprintf(stderr,"Barcode guide list needs to be ID<whitespace>SEQUENCE<whitespace>GROUP");
+                    fprintf(stderr,
+                            "Barcode guide list needs to be ID<whitespace>SEQUENCE<whitespace>GROUP");
                     return 1;
                 }
                 else
@@ -341,13 +348,15 @@ switch (c) t:
             bcg[bgcnt].b.id.n=strlen(bcg[bgcnt].b.id.s);
             bcg[bgcnt].b.seq.n=strlen(bcg[bgcnt].b.seq.s);
 
-            if (debug) fprintf(stderr, "BCG: %d bc:%s n:%d\n", bgcnt, bcg[bgcnt].b.seq.s, bcg[bgcnt].b.seq.n);
+            if (debug) fprintf(stderr, "BCG: %d bc:%s n:%d\n", bgcnt, bcg[bgcnt].b.seq.s,
+                                   bcg[bgcnt].b.seq.n);
             ++bgcnt;
         }
 
         if (!bgcnt)
         {
-            fprintf(stderr,"No barcodes %s from guide list %s.\n", group ? "matched" : "read", list);
+            fprintf(stderr,"No barcodes %s from guide list %s.\n",
+                    group ? "matched" : "read", list);
             return 1;
         }
 
@@ -428,7 +437,8 @@ switch (c) t:
                     {
                         ++bcg[b].ecnt[i];
                     }
-                    else if (ns > bcg[b].b.seq.n && !strncasecmp(s+ns-bcg[b].b.seq.n-1, bcg[b].b.seq.s, bcg[b].b.seq.n))
+                    else if (ns > bcg[b].b.seq.n &&
+                             !strncasecmp(s+ns-bcg[b].b.seq.n-1, bcg[b].b.seq.s, bcg[b].b.seq.n))
                     {
                         ++bcg[b].escnt[i];
                     }
@@ -470,7 +480,8 @@ switch (c) t:
                 if (fsum[i] > bestcnt)
                 {
                     if (debug > 1)
-                        fprintf(stderr,"file %d(%s), bcg: %s, file-sum: %d, bestsum: %d\n", i, in[i], bcg[b].gptr->id, fsum[i], bestcnt);
+                        fprintf(stderr,"file %d(%s), bcg: %s, file-sum: %d, bestsum: %d\n", i, in[i],
+                                bcg[b].gptr->id, fsum[i], bestcnt);
 
                     bestcnt=fsum[i];
                     besti=i;
@@ -478,7 +489,8 @@ switch (c) t:
                 }
 
                 if (debug > 1)
-                    fprintf(stderr,"dual %d(%s), bcg: %s, file-sum: %d, bestsum: %d\n", i, in[i], bcg[b].gptr->id, dfsum[i], dbestcnt);
+                    fprintf(stderr,"dual %d(%s), bcg: %s, file-sum: %d, bestsum: %d\n", i, in[i],
+                            bcg[b].gptr->id, dfsum[i], dbestcnt);
 
                 if (bcg[b].b.dual)
                 {
@@ -490,14 +502,18 @@ switch (c) t:
                     if (dfsum[i] > dbestcnt)
                     {
                         if (debug > 1)
-                            fprintf(stderr,"dual %d(%s), bcg: %s, file-sum: %d, bestsum: %d\n", i, in[i], bcg[b].gptr->id, dfsum[i], dbestcnt);
+                            fprintf(stderr,"dual %d(%s), bcg: %s, file-sum: %d, bestsum: %d\n", i, in[i],
+                                    bcg[b].gptr->id, dfsum[i], dbestcnt);
                         dbestcnt=dfsum[i];
                         dbesti=i;
                     }
                 }
             }
-            if (debug > 0) fprintf(stderr,"file-best %d sum:%d, max:%d\n", besti, fsum[besti], fmax[besti]);
-            if (debug > 0 && bestdual) fprintf(stderr,"dual file-best %d sum:%d, max:%d\n", dbesti, dfsum[dbesti], dfmax[dbesti]);
+            if (debug > 0) fprintf(stderr,"file-best %d sum:%d, max:%d\n", besti,
+                                       fsum[besti], fmax[besti]);
+            if (debug > 0 &&
+                    bestdual) fprintf(stderr,"dual file-best %d sum:%d, max:%d\n", dbesti,
+                                          dfsum[dbesti], dfmax[dbesti]);
         }
 
         // chosen file is "besti"
@@ -506,11 +522,13 @@ switch (c) t:
         int gmax=0, gindex=-1, scnt = 0, ecnt=0, dscnt = 0, decnt = 0;
         int thresh = (int) (pickmaxpct*fmax[i]);
 
-        if (debug > 0) fprintf(stderr,"besti: %d thresh: %d, dual: %d\n", besti, thresh, bestdual);
+        if (debug > 0) fprintf(stderr,"besti: %d thresh: %d, dual: %d\n", besti, thresh,
+                                   bestdual);
         for (b=0; b<bgcnt; ++b)
         {
             int hcnt = (int) (max(bcg[b].bcnt[i],bcg[b].ecnt[i]) * log(bcg[b].b.seq.n));
-            if (debug > 1) fprintf(stderr,"cnt: %s %s hc:%d bc:%d ec: %d\n", bcg[b].b.id.s, bcg[b].b.seq.s, hcnt, bcg[b].bcnt[i], bcg[b].ecnt[i]);
+            if (debug > 1) fprintf(stderr,"cnt: %s %s hc:%d bc:%d ec: %d\n", bcg[b].b.id.s,
+                                       bcg[b].b.seq.s, hcnt, bcg[b].bcnt[i], bcg[b].ecnt[i]);
             if (hcnt >= thresh)
             {
                 // increase group count
@@ -561,7 +579,8 @@ switch (c) t:
 
         // since this is a known good set, use a very low threshold, just to catch them all
         fprintf(stderr, "Using Barcode Group: %s on File: %s (%s), Threshold %2.2f%%\n",
-                grs[gindex].id, in[i], endstr(end), 100.0 * (float) ((float)thresh/THFIXFACTOR)/sampcnt);
+                grs[gindex].id, in[i], endstr(end),
+                100.0 * (float) ((float)thresh/THFIXFACTOR)/sampcnt);
 
         if (bestdual)
         {
@@ -585,7 +604,8 @@ switch (c) t:
         {
             if (bcg[b].gptr->i == gindex)
             {
-                int cnt = (end == 'e' ? (bcg[b].ecnt[i]+bcg[b].escnt[i]) : ( bcg[b].bcnt[i] + bcg[b].bscnt[i] ));
+                int cnt = (end == 'e' ? (bcg[b].ecnt[i]+bcg[b].escnt[i]) :
+                           ( bcg[b].bcnt[i] + bcg[b].bscnt[i] ));
                 if (cnt > thresh/THFIXFACTOR)
                 {
                     // count exceeds threshold... use it
@@ -597,7 +617,10 @@ switch (c) t:
                         if (!dual)
                             fprintf(stderr, "Using Barcode %s (%s)\n", bcg[b].b.id.s, bcg[b].b.seq.s);
 
-                        if (debug) fprintf(stderr, "Debug Barcode %s (%s-%s) ... ecnt:%d, escnt:%d,bcnt:%d, bscnt:%d\n", bcg[b].b.id.s, bcg[b].b.seq.s, bcg[b].b.dual, bcg[b].ecnt[i], bcg[b].escnt[i], bcg[b].bcnt[i], bcg[b].bscnt[i]);
+                        if (debug) fprintf(stderr,
+                                               "Debug Barcode %s (%s-%s) ... ecnt:%d, escnt:%d,bcnt:%d, bscnt:%d\n",
+                                               bcg[b].b.id.s, bcg[b].b.seq.s, bcg[b].b.dual, bcg[b].ecnt[i], bcg[b].escnt[i],
+                                               bcg[b].bcnt[i], bcg[b].bscnt[i]);
 
                     }
                     else
@@ -605,9 +628,13 @@ switch (c) t:
                         bc[bcnt].shifted=1;
 
                         if (!dual)
-                            fprintf(stderr, "Using Barcode %s (%s) shifted\n", bcg[b].b.id.s, bcg[b].b.seq.s);
+                            fprintf(stderr, "Using Barcode %s (%s) shifted\n", bcg[b].b.id.s,
+                                    bcg[b].b.seq.s);
 
-                        if (debug) printf("Debug Barcode %s (%s-%s) shifted ... ecnt:%d, escnt:%d,bcnt:%d, bscnt:%d\n", bcg[b].b.id.s, bcg[b].b.seq.s, bcg[b].b.dual, bcg[b].ecnt[i], bcg[b].escnt[i], bcg[b].bcnt[i], bcg[b].bscnt[i]);
+                        if (debug)
+                            printf("Debug Barcode %s (%s-%s) shifted ... ecnt:%d, escnt:%d,bcnt:%d, bscnt:%d\n",
+                                   bcg[b].b.id.s, bcg[b].b.seq.s, bcg[b].b.dual, bcg[b].ecnt[i], bcg[b].escnt[i],
+                                   bcg[b].bcnt[i], bcg[b].bscnt[i]);
                     }
                     ++bcnt;
                 }
@@ -709,12 +736,15 @@ switch (c) t:
         }
         else if (round(tots/nr) < 12)
         {
-            fprintf(stderr, "File %s looks to be barcode-only, but it's length deviation is too high (%.4g)\n", in[0], dev);
+            fprintf(stderr,
+                    "File %s looks to be barcode-only, but it's length deviation is too high (%.4g)\n",
+                    in[0], dev);
             return 1;
         }
         else
         {
-            fprintf(stderr, "File %s isn't a barcode-only file, try using -l instead\n", in[0]);
+            fprintf(stderr, "File %s isn't a barcode-only file, try using -l instead\n",
+                    in[0]);
             return 1;
         }
 
@@ -830,7 +860,8 @@ switch (c) t:
             }
             bc[bcnt].id.n=strlen(bc[bcnt].id.s);
             bc[bcnt].seq.n=strlen(bc[bcnt].seq.s);
-            if (debug) fprintf(stderr, "BC: %d bc:%s n:%d\n", bcnt, bc[bcnt].seq.s, bc[bcnt].seq.n);
+            if (debug) fprintf(stderr, "BC: %d bc:%s n:%d\n", bcnt, bc[bcnt].seq.s,
+                                   bc[bcnt].seq.n);
             ++bcnt;
         }
 
@@ -891,23 +922,27 @@ switch (c) t:
                 read_fq(fin[1], nr, &fq[1]);
             ++nr;
 
-            if (st.st_size > (sampcnt * 500) && poorqual(0, fq[0].seq.n, fq[0].seq.s, fq[0].qual.s))
+            if (st.st_size > (sampcnt * 500) &&
+                    poorqual(0, fq[0].seq.n, fq[0].seq.s, fq[0].qual.s))
                 continue;
 
             if (dual)
-                if (st.st_size > (sampcnt * 500) && poorqual(1, fq[1].seq.n, fq[1].seq.s, fq[1].qual.s))
+                if (st.st_size > (sampcnt * 500) &&
+                        poorqual(1, fq[1].seq.n, fq[1].seq.s, fq[1].qual.s))
                     continue;
 
             for (i=0; i<bcnt; ++i)
             {
                 int dok = 0;
-                if (debug > 1) fprintf(stderr, "check %s vs %s: %s vs %s", fq[0].id.s, bc[i].id.s, fq[0].seq.s, bc[i].seq.s);
+                if (debug > 1) fprintf(stderr, "check %s vs %s: %s vs %s", fq[0].id.s,
+                                           bc[i].id.s, fq[0].seq.s, bc[i].seq.s);
                 if (!strncmp(fq[0].seq.s, bc[i].seq.s, bc[i].seq.n))
                 {
                     ++nb;
                     ++dok;
                 }
-                else if (!strncmp(fq[0].seq.s+fq[0].seq.n-bc[i].seq.n, bc[i].seq.s, bc[i].seq.n))
+                else if (!strncmp(fq[0].seq.s+fq[0].seq.n-bc[i].seq.n, bc[i].seq.s,
+                                  bc[i].seq.n))
                 {
                     ++ne;
                     ++dok;
@@ -920,7 +955,8 @@ switch (c) t:
                         ++dnb;
                         ++dok;
                     }
-                    else if (!strncmp(fq[1].seq.s+fq[1].seq.n-bc[i].dual_n, bc[i].dual, bc[i].dual_n))
+                    else if (!strncmp(fq[1].seq.s+fq[1].seq.n-bc[i].dual_n, bc[i].dual,
+                                      bc[i].dual_n))
                     {
                         ++dne;
                         ++dok;
@@ -958,7 +994,8 @@ switch (c) t:
             {
                 if (recount[i] >= thresh)
                 {
-                    fprintf(stderr, "Using Barcode %s (%s-%s)\n", bc[i].id.s, bc[i].seq.s, bc[i].dual);
+                    fprintf(stderr, "Using Barcode %s (%s-%s)\n", bc[i].id.s, bc[i].seq.s,
+                            bc[i].dual);
                     if (debug)
                         fprintf(stderr, "%d >= %d\n", recount[i], thresh);
                     bc[bcnt].seq=bc[i].seq;
@@ -970,7 +1007,8 @@ switch (c) t:
                 else
                 {
                     if (debug)
-                        fprintf(stderr, "skipping barcode %s (%s-%s), %d < %d\n", bc[i].id.s, bc[i].seq.s, bc[i].dual, recount[i], thresh);
+                        fprintf(stderr, "skipping barcode %s (%s-%s), %d < %d\n", bc[i].id.s,
+                                bc[i].seq.s, bc[i].dual, recount[i], thresh);
                 }
             }
         }
@@ -1006,7 +1044,8 @@ switch (c) t:
             strcat(bc[b].out[i], p+1);
             if (!(bc[b].fout[i]=gzopen(bc[b].out[i], "w", &bc[b].gzout[i])))
             {
-                fprintf(stderr, "Error opening output file '%s': %s\n",bc[b].out[i], strerror(errno));
+                fprintf(stderr, "Error opening output file '%s': %s\n",bc[b].out[i],
+                        strerror(errno));
                 return 1;
             }
         }
@@ -1047,7 +1086,8 @@ switch (c) t:
             int mate_ok=read_fq(fin[i], nrec, &fq[i]);
             if (read_ok != mate_ok)
             {
-                fprintf(stderr, "# of rows in mate file '%s' doesn't match primary file, quitting!\n", in[i]);
+                fprintf(stderr,
+                        "# of rows in mate file '%s' doesn't match primary file, quitting!\n", in[i]);
                 return 1;
             }
             if (verify)
@@ -1058,13 +1098,15 @@ switch (c) t:
                     char *p=strchr(fq[i].id.s,verify);
                     if (!p)
                     {
-                        fprintf(stderr, "File %s is missing id verification char %c at line %d", in[i], verify, nrec*4+1);
+                        fprintf(stderr, "File %s is missing id verification char %c at line %d", in[i],
+                                verify, nrec*4+1);
                         return 1;
                     }
                     int l = p-fq[i].id.s;
                     if (strncmp(fq[0].id.s, fq[i].id.s, l))
                     {
-                        fprintf(stderr, "File %s, id doesn't match file %s at line %d", in[0], in[i], nrec*4+1);
+                        fprintf(stderr, "File %s, id doesn't match file %s at line %d", in[0], in[i],
+                                nrec*4+1);
                         return 1;
                     }
                 }
@@ -1073,7 +1115,8 @@ switch (c) t:
         ++nrec;
         if (read_ok < 0) continue;
 
-        int i, best=-1, bestmm=mismatch+distance+1, bestd=mismatch+distance+1, next_best=mismatch+distance*2+1;
+        int i, best=-1, bestmm=mismatch+distance+1, bestd=mismatch+distance+1,
+               next_best=mismatch+distance*2+1;
 
         if (bcinheader)
         {
@@ -1178,12 +1221,15 @@ switch (c) t:
             {
                 next_best=bestd;
                 bestd=d;
-                if (debug > 1) fprintf(stderr,"next_dist: %d, best_seq: %s:%d\n", next_best, bc[i].seq.s, bestd);
+                if (debug > 1) fprintf(stderr,"next_dist: %d, best_seq: %s:%d\n", next_best,
+                                           bc[i].seq.s, bestd);
             }
             // if exact match
             if (d==0)
             {
-                if (debug) fprintf(stderr, ", found bc: %d bc:%s n:%d, bestd: %d, next_best: %d", i, bc[i].seq.s, bc[i].seq.n, bestd, next_best);
+                if (debug) fprintf(stderr,
+                                       ", found bc: %d bc:%s n:%d, bestd: %d, next_best: %d", i, bc[i].seq.s,
+                                       bc[i].seq.n, bestd, next_best);
                 best=i;
                 break;
             }
@@ -1296,7 +1342,8 @@ switch (c) t:
 
 
     if (poor_distance > 0)
-        fprintf(stderr, "Skipped because of distance < %d : %d\n", distance, poor_distance);
+        fprintf(stderr, "Skipped because of distance < %d : %d\n", distance,
+                poor_distance);
 
     if (!io_ok)
         fprintf(stderr, "Returning error because of i/o error during file close\n");

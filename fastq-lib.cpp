@@ -1,24 +1,24 @@
 /*
-Copyright (c) 2011 Expression Analysis / Erik Aronesty
+   Copyright (c) 2011 Expression Analysis / Erik Aronesty
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+   THE SOFTWARE.
+   */
 
 #include "fastq-lib.h"
 
@@ -136,10 +136,12 @@ int read_fq(FILE *in, int rno, struct fq *fq, const char *name)
         return 0;
     if (fq->id.s[0] != '@' || fq->com.s[0] != '+' || fq->seq.n != fq->qual.n)
     {
-        const char *errtyp = (fq->seq.n != fq->qual.n) ?  "length mismatch" : fq->id.s[0] != '@' ? "no '@' for id" : "no '+' for comment";
+        const char *errtyp = (fq->seq.n != fq->qual.n) ?  "length mismatch" :
+            fq->id.s[0] != '@' ? "no '@' for id" : "no '+' for comment";
         if (name)
         {
-            fprintf(stderr, "Malformed fastq record (%s) in file '%s', line %d\n", errtyp, name, rno*2+1);
+            fprintf(stderr, "Malformed fastq record (%s) in file '%s', line %d\n", errtyp,
+                    name, rno*2+1);
         }
         else
         {
@@ -277,22 +279,22 @@ bool poorqual(int n, int l, const char *s, const char *q)
         return ((xmean-33) < 18) || (ns > 1);
     }
     // enough data? use stdev
-    int pmean = quals[n].sum / quals[n].cnt;                                // mean q
-    double pdev = stdev(quals[n].cnt, quals[n].sum, quals[n].ssq);          // dev q
-    int serr = min(pmean/2,max(1,pdev/sqrt(l)));                                         // stderr for length l
+    int pmean = quals[n].sum / quals[n].cnt;                       // mean q
+    double pdev = stdev(quals[n].cnt, quals[n].sum, quals[n].ssq); // dev q
+    int serr = min(pmean/2,max(1, pdev/sqrt(l)));                  // stderr for length l
     // mean qual < min(18,peman-serr*3) = junk/skip it
     // cap low qual, because adapters often are low qual
     // but you still need to calculate something, in case we're doing ion/pacbio
     int thr = min((33+18), (pmean - serr * 3));
     if (xmean < thr)
     {
-//           fprintf(stderr, "POORQ xmean:%d, pmean:%d, pdev:%f, sqrt(l):%f, serr:%d, thr: %d, %s",xmean,pmean,pdev,sqrt(l),serr,thr,s);
-        return 1;                                                       // ditch it
+        //fprintf(stderr, "POORQ xmean:%d, pmean:%d, pdev:%f, sqrt(l):%f, serr:%d, thr: %d, %s",xmean,pmean,pdev,sqrt(l),serr,thr,s);
+        return 1;  // ditch it
     }
-    if (ns > (1+(l*quals[n].ns / quals[n].cnt)))                            // 1 more n than average?
+    if (ns > (1+(l*quals[n].ns / quals[n].cnt)))     // 1 more n than average?
     {
-//           fprintf(stderr, "POORQ: ns:%d, thr: %d\n",ns,(int)(1+(l*quals[n].ns / quals[n].cnt)));
-        return 1;                                                       // ditch it
+        //fprintf(stderr, "POORQ: ns:%d, thr: %d\n",ns,(int)(1+(l*quals[n].ns / quals[n].cnt)));
+        return 1;  // ditch it
     }
     return 0;
 }
@@ -358,21 +360,21 @@ void free_fq(struct fq *f)
 
 /* getline.c -- Replacement for GNU C library function getline
 
-Copyright (C) 1993 Free Software Foundation, Inc.
+   Copyright (C) 1993 Free Software Foundation, Inc.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the
-License, or (at your option) any later version.
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as
+   published by the Free Software Foundation; either version 2 of the
+   License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.
+   This program is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 /* Written by Jan Brittenson, bson@gnu.ai.mit.edu.  */
 
@@ -387,10 +389,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
    as necessary.  Return the number of characters read (not including the
    null terminator), or -1 on error or EOF.  */
 
-int getstr (char ** lineptr, size_t *n, FILE * stream, char terminator, int offset)
+int getstr (char ** lineptr, size_t *n, FILE * stream, char terminator,
+        int offset)
 {
-    int nchars_avail;		/* Allocated but unused chars in *LINEPTR.  */
-    char *read_pos;		/* Where we're reading into *LINEPTR. */
+    int nchars_avail;       /* Allocated but unused chars in *LINEPTR.  */
+    char *read_pos;     /* Where we're reading into *LINEPTR. */
     int ret;
 
     if (!lineptr || !n || !stream)
@@ -412,8 +415,8 @@ int getstr (char ** lineptr, size_t *n, FILE * stream, char terminator, int offs
         register int c = getc (stream);
 
         /* We always want at least one char left in the buffer, since we
-        always (unless we get an error while reading the first char)
-         NUL-terminate the line buffer.  */
+           always (unless we get an error while reading the first char)
+           NUL-terminate the line buffer.  */
 
         assert(*n - nchars_avail == read_pos - *lineptr);
         if (nchars_avail < 1)
