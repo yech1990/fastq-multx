@@ -42,34 +42,34 @@ struct bc
 {
     line id;
     line seq;
-    char *out[6];			// one output per input
+    char *out[6]; // one output per input
     FILE *fout[6];
     bool gzout[6];
-    int cnt;			// count found
-    bool shifted;			// count found in 1-shifted position
-    char * dual;			// is this a dual-indexed barcode?  if so, this points to the second index.
-    int dual_n;			// length of dual
+    int cnt;      // count found
+    bool shifted; // count found in 1-shifted position
+    char * dual;  // is this a dual-indexed barcode?  if so, this points to the second index.
+    int dual_n;   // length of dual
 };
 
 // group of barcodes
 struct group
 {
     char *id;
-    int tcnt;			// number of codes past thresh
-    int i;				// my index
+    int tcnt; // number of codes past thresh
+    int i;    // my index
 };
 
-// barcode group
+                  // barcode group
 struct bcg
 {
-    struct bc b;			// barcode
-    line group;			// group (fluidigm, truseq, etc)
-    int bcnt[6];			// matched begin of file n
-    int ecnt[6];			// matched end of file n
-    int bscnt[6];			// matched begin of file n, shifted by 1
-    int escnt[6];			// matched end of file n, shifted by 1
-    int dbcnt[6];                   // dual matched begin of file n
-    int decnt[6];                   // dual matched end of file n
+    struct bc b;  // barcode
+    line group;   // group (fluidigm, truseq, etc)
+    int bcnt[6];  // matched begin of file n
+    int ecnt[6];  // matched end of file n
+    int bscnt[6]; // matched begin of file n, shifted by 1
+    int escnt[6]; // matched end of file n, shifted by 1
+    int dbcnt[6]; // dual matched begin of file n
+    int decnt[6]; // dual matched end of file n
     struct group *gptr;
 };
 
@@ -121,8 +121,8 @@ int main (int argc, char **argv)
     const char *out[6];
     int f_n=0;
     int f_oarg=0;
-    const char* guide=NULL;		// use an indexed-read
-    const char* list=NULL;		// use a barcode master list
+    const char* guide=NULL;        // use an indexed-read
+    const char* list=NULL;        // use a barcode master list
     char verify='\0';
     bool noexec = false;
     const char *group = NULL;
@@ -134,7 +134,7 @@ int main (int argc, char **argv)
     int i;
     bool omode = false;
     char *bfil = NULL;
-    while (	(c = getopt (argc, argv, "-DzxnHhbeov:m:B:g:L:l:G:q:d:t:")) != -1)
+    while ((c = getopt (argc, argv, "-DzxnHhbeov:m:B:g:L:l:G:q:d:t:")) != -1)
     {
 switch (c) t:
         {
@@ -527,7 +527,7 @@ switch (c) t:
             fprintf(stderr, "Unable to determine barcode group\n");
             exit(1);
         }
-//		printf("gmax: %d, gindex %d, %s, thresh: %d\n", gmax, gindex, grs[gindex].id, thresh);
+//        printf("gmax: %d, gindex %d, %s, thresh: %d\n", gmax, gindex, grs[gindex].id, thresh);
 
         for (b=0; b<bgcnt; ++b)
         {
@@ -767,7 +767,7 @@ switch (c) t:
                 p=s+nr-blen;
             }
             p[blen]='\0';
-            if (!ent)  		// make a new ent
+            if (!ent)          // make a new ent
             {
                 ent = (bnode *) malloc(sizeof(*ent));
                 ent->seq=(char*)malloc(blen+1);;
@@ -781,8 +781,8 @@ switch (c) t:
 
             bnode *fent = * (bnode**)  tsearch(ent, &picktab, bnodecomp);
 
-            if (fent == ent)	// used the ent, added to tree
-                ent = NULL;	// need a new one
+            if (fent == ent)    // used the ent, added to tree
+                ent = NULL;    // need a new one
 
             ++fent->cnt;
 
@@ -1167,11 +1167,11 @@ switch (c) t:
                 if (dual)
                     d+=hd(fq[1].seq.s,bc[i].dual, bc[i].dual_n);
 
-                //				if (debug > 1) {
-                //					fprintf(stderr, "index: %d dist: %d bc:%s n:%d", i, d, bc[i].seq.s, bc[i].seq.n);
-                //					if (dual) fprintf(stderr, ", idual: %s %d", bc[i].dual, bc[i].dual_n);
-                //					fprintf(stderr, "\n");
-                //				}
+                //                if (debug > 1) {
+                //                    fprintf(stderr, "index: %d dist: %d bc:%s n:%d", i, d, bc[i].seq.s, bc[i].seq.n);
+                //                    if (dual) fprintf(stderr, ", idual: %s %d", bc[i].dual, bc[i].dual_n);
+                //                    fprintf(stderr, "\n");
+                //                }
             }
             // simple...
             if (d < bestd)
@@ -1192,11 +1192,11 @@ switch (c) t:
                 // if ok match
                 if (d == bestmm)
                 {
-                    best=-1;		// more than 1 match... bad
+                    best=-1;        // more than 1 match... bad
                 }
                 else if (d < bestmm)
                 {
-                    bestmm=d;		// best match...ok
+                    bestmm=d;        // best match...ok
                     best=i;
                 }
             }
@@ -1350,7 +1350,7 @@ void pickbest(const void *nodep, const VISIT which, const int depth)
     if (which==endorder || which==leaf)
     {
         bnode *ent = *(bnode **) nodep;
-//		 printf("HERE!! %s, %d, %d\n", ent->seq, ent->cnt, pickmax);
+//         printf("HERE!! %s, %d, %d\n", ent->seq, ent->cnt, pickmax);
         // allow one sample to be as much as 1/10 another, possibly too conservative
         if (ent->cnt > pickmax && bcnt < MAX_BARCODE_NUM)
         {
