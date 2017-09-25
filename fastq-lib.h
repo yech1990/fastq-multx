@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 // 32-bit o/s support
 #if defined(__i386__)
-	#define _FILE_OFFSET_BITS 64
+    #define _FILE_OFFSET_BITS 64
 #endif
 
 // standard libs
@@ -42,7 +42,7 @@ THE SOFTWARE.
 #include <stddef.h>
 
 #if defined(__APPLE__)
-	#define getopt(a,b,c) getopt_long(a,b,c,NULL,NULL)
+    #define getopt(a,b,c) getopt_long(a,b,c,NULL,NULL)
 #endif
 
 // misc useful macros
@@ -57,15 +57,19 @@ THE SOFTWARE.
 #define MAX_FILENO_QUALS 6
 
 // read line, read fq
-typedef struct line {
-        char *s; int n; size_t a;
+typedef struct line
+{
+    char *s;
+    int n;
+    size_t a;
 } line;
 
-struct fq {
-        line id;
-        line seq;
-        line com;
-        line qual;
+struct fq
+{
+    line id;
+    line seq;
+    line com;
+    line qual;
 };
 
 
@@ -74,10 +78,10 @@ void free_fq(struct fq *fq);
 
 // not GNU?  probably no getline & strtok_r...
 #if !defined( __GNUC__) || defined(WIN32) || defined(__APPLE__)
-	ssize_t getline(char **lineptr, size_t *n, FILE *stream);
-	char* strtok_r(char *str, const char *delim, char **nextp);
+    ssize_t getline(char **lineptr, size_t *n, FILE *stream);
+    char* strtok_r(char *str, const char *delim, char **nextp);
 #endif
-    
+
 // get file extension
 const char *fext(const char *f);
 
@@ -95,20 +99,20 @@ int gzclose(FILE *f, bool isgz);
 bool poorqual(int n, int l, const char *s, const char *q);
 
 // returns number of differences between 2 strings, where n is the "max-length to check"
-inline int hd(char *a, char *b, int n) {
-        int d=0;
-        //if (debug) fprintf(stderr, "hd: %s,%s ", a, b);
-        while (*a && *b && n > 0) {
-                if (*a != *b) ++d;
-                --n;
-                ++a;
-                ++b;
-        }
-        //if (debug) fprintf(stderr, ", %d/%d\n", d, n);
-        return d+n;
+inline int hd(char *a, char *b, int n)
+{
+    int d=0;
+    //if (debug) fprintf(stderr, "hd: %s,%s ", a, b);
+    while (*a && *b && n > 0)
+    {
+        if (*a != *b) ++d;
+        --n;
+        ++a;
+        ++b;
+    }
+    //if (debug) fprintf(stderr, ", %d/%d\n", d, n);
+    return d+n;
 }
 
 // reverse complement an fq entry into a blank (memset 0) one
 void revcomp(struct fq *dest, struct fq* src);
-
-
