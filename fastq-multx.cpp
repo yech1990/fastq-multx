@@ -1448,7 +1448,7 @@ void getbcfromheader(char *s, int *ns, char **q, char **s2, int *ns2)
     }
 
     char *t;
-    while(t=strchr(p,':'))
+    while (t=strchr(p,':'))
     {
         p=t+1;
     }
