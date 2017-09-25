@@ -59,7 +59,7 @@ struct group
     int i;    // my index
 };
 
-                  // barcode group
+// barcode group
 struct bcg
 {
     struct bc b;  // barcode
@@ -112,7 +112,7 @@ int main (int argc, char **argv)
     bool trim = true;
     int mismatch = 1;
     int distance = 2;
-    int poor_distance = 0;       // count of skipped reads on distance only
+    int poor_distance = 0;  // count of skipped reads on distance only
     int quality = 0;
     char end = '\0';
     char dend = '\0';
@@ -121,8 +121,8 @@ int main (int argc, char **argv)
     const char *out[6];
     int f_n=0;
     int f_oarg=0;
-    const char* guide=NULL;        // use an indexed-read
-    const char* list=NULL;        // use a barcode master list
+    const char* guide=NULL; // use an indexed-read
+    const char* list=NULL;  // use a barcode master list
     char verify='\0';
     bool noexec = false;
     const char *group = NULL;
@@ -407,7 +407,7 @@ switch (c) t:
                     q[--nq]='\0';
                 }
 
-// skip if quality is below average
+                // skip if quality is below average
                 if (st.st_size > (sampcnt * 500) && poorqual(i, ns, s, q))
                     continue;
 
