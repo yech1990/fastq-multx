@@ -137,7 +137,7 @@ int read_fq(FILE *in, int rno, struct fq *fq, const char *name)
     if (fq->id.s[0] != '@' || fq->com.s[0] != '+' || fq->seq.n != fq->qual.n)
     {
         const char *errtyp = (fq->seq.n != fq->qual.n) ?  "length mismatch" :
-            fq->id.s[0] != '@' ? "no '@' for id" : "no '+' for comment";
+                             fq->id.s[0] != '@' ? "no '@' for id" : "no '+' for comment";
         if (name)
         {
             fprintf(stderr, "Malformed fastq record (%s) in file '%s', line %d\n", errtyp,
@@ -390,7 +390,7 @@ void free_fq(struct fq *f)
    null terminator), or -1 on error or EOF.  */
 
 int getstr (char ** lineptr, size_t *n, FILE * stream, char terminator,
-        int offset)
+            int offset)
 {
     int nchars_avail;       /* Allocated but unused chars in *LINEPTR.  */
     char *read_pos;     /* Where we're reading into *LINEPTR. */

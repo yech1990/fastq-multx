@@ -10,11 +10,11 @@ use File::Temp;
 
 use strict;
 
-our $COPY_OK=0;
+our $COPY_OK = 0;
 
 use Getopt::Long qw(:config pass_through no_ignore_case);
 
-GetOptions("X"=>\$COPY_OK);
+GetOptions( "X" => \$COPY_OK );
 
 my $testdir = dirname(__FILE__);
 
@@ -28,24 +28,30 @@ my $template = basename($0) . ".XXXXX";
 
 # exported
 our $BINDIR = "..";
-our $TMPDIR=File::Temp::tempdir($template, CLEANUP=>0, DIR=>$tempbase);
-our $INDIR="in/" . basename($0); $INDIR =~ s/\.t$//;
-our $OUTDIR="out/" . basename($0); $OUTDIR =~ s/\.t$//;
+our $TMPDIR
+    = File::Temp::tempdir( $template, CLEANUP => 0, DIR => $tempbase );
+our $INDIR = "in/" . basename($0);
+$INDIR =~ s/\.t$//;
+our $OUTDIR = "out/" . basename($0);
+$OUTDIR =~ s/\.t$//;
 
 sub check_output {
     my ($arr) = @_;
     for my $f (@$arr) {
-        my $o = File::Spec->catfile($OUTDIR,basename($f));
-        my $c1 = ($f =~ /.gz$/ ? "gunzip -c '$f'" : "cat '$f'") . "|perl -pe 's/\Q$TMPDIR\E/#TMPDIR#/g' |";
+        my $o = File::Spec->catfile( $OUTDIR, basename($f) );
+        my $c1 = ( $f =~ /.gz$/ ? "gunzip -c '$f'" : "cat '$f'" )
+            . "|perl -pe 's/\Q$TMPDIR\E/#TMPDIR#/g' |";
         if ($COPY_OK) {
-            my $cp = "$c1 " . ( $f =~ /.gz$/ ? "gzip -c" : "cat" ) . " > '$o'";
+            my $cp
+                = "$c1 " . ( $f =~ /.gz$/ ? "gzip -c" : "cat" ) . " > '$o'";
             system($cp);
         }
-        my ($i1, $i2);
-        my $c2 = ($o =~ /.gz$/ ? "gunzip -c '$o'" : "cat '$o'") . "|perl -pe 's/\Q$TMPDIR\E/#TMPDIR#/g' |";
+        my ( $i1, $i2 );
+        my $c2 = ( $o =~ /.gz$/ ? "gunzip -c '$o'" : "cat '$o'" )
+            . "|perl -pe 's/\Q$TMPDIR\E/#TMPDIR#/g' |";
         open $i1, $c1;
         open $i2, $c2;
-        ok(compare($i1, $i2) == 0, "Files equal: $f == $o");
+        ok( compare( $i1, $i2 ) == 0, "Files equal: $f == $o" );
     }
 }
 
@@ -57,11 +63,11 @@ sub run {
 
     $cmd =~ s/%o:(\S+)/$1/g;
 
-#    warn "# $cmd\n";
+    #    warn "# $cmd\n";
 
     my $exit = system($cmd);
 
-    if ($exit >> 8) {
+    if ( $exit >> 8 ) {
         $exit = $exit >> 8;
     }
 

@@ -1,28 +1,28 @@
 /*
-Copyright (c) 2011 Expression Analysis / Erik Aronesty
+   Copyright (c) 2011 Expression Analysis / Erik Aronesty
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+   THE SOFTWARE.
+   */
 
 /*
 
-See "void usage" below for usage.
+   See "void usage" below for usage.
 
 */
 
@@ -100,9 +100,9 @@ int bnodecomp(const void *a, const void *b)
 };
 static float pickmaxpct=0.10;
 void getbcfromheader(struct fq *fqin, struct fq *bc, char **s2=NULL,
-                     int *ns2=NULL);
+        int *ns2=NULL);
 void getbcfromheader(char *s, int *ns, char **q=NULL, char **s2=NULL,
-                     int *ns2=NULL);
+        int *ns2=NULL);
 
 int ignore;
 size_t ignore_st;
@@ -138,108 +138,108 @@ int main (int argc, char **argv)
     char *bfil = NULL;
     while ((c = getopt (argc, argv, "-DzxnHhbeov:m:B:g:L:l:G:q:d:t:")) != -1)
     {
-switch (c) t:
+        switch (c) t:
         {
-        case '\1':
-            if (omode)
-            {
-                if (f_oarg<5)
-                    out[f_oarg++] = optarg;
+            case '\1':
+                if (omode)
+                {
+                    if (f_oarg<5)
+                        out[f_oarg++] = optarg;
+                    else
+                    {
+                        usage(stderr);
+                        return 1;
+                    }
+                }
+                else if (!bfil && !guide && !list)
+                    bfil = optarg;
+                else if (f_n<5)
+                {
+                    in[f_n++] = optarg;
+                }
                 else
                 {
                     usage(stderr);
                     return 1;
                 }
-            }
-            else if (!bfil && !guide && !list)
-                bfil = optarg;
-            else if (f_n<5)
-            {
+                break;
+            case 'o':
+                omode=true;
+                break;
+            case 'v':
+                if (strlen(optarg)>1)
+                {
+                    fprintf(stderr, "Option -v requires a single character argument");
+                    exit(1);
+                }
+                verify = *optarg;
+                break;
+            case 'b':
+                end = 'b';
+                break;
+            case 'h':
+                usage(stdout);
+                exit(0);
+                break;
+            case 'H':
+                bcinheader = 1;
+                usefile1=1;
+                break;
+            case 'e':
+                end = 'e';
+                break;
+            case 'G':
+                group = optarg;
+                break;
+            case 'g':
+                guide = optarg;
                 in[f_n++] = optarg;
-            }
-            else
-            {
+                out[f_oarg++] = "n/a";
+                break;
+            case 'l':
+                list = optarg;
+                usefile1=0;
+                break;
+            case 'L':
+                list = optarg;
+                usefile1=1;
+                break;
+            case 'B':
+                bfil = optarg;
+                list = NULL;
+                break;
+            case 'x':
+                trim = false;
+                break;
+            case 'n':
+                noexec = true;
+                break;
+            case 't':
+                threshfactor = atof(optarg);
+                break;
+            case 'm':
+                mismatch = atoi(optarg);
+                break;
+            case 'd':
+                distance = atoi(optarg);
+                break;
+            case 'q':
+                quality = atoi(optarg);
+                break;
+            case 'D':
+                ++debug;
+                break;
+            case '?':
+                if (strchr("vmBglG", optopt))
+                    fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+                else if (isprint(optopt))
+                    fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+                else
+                    fprintf (stderr,
+                            "Unknown option character `\\x%x'.\n",
+                            optopt);
                 usage(stderr);
                 return 1;
-            }
-            break;
-        case 'o':
-            omode=true;
-            break;
-        case 'v':
-            if (strlen(optarg)>1)
-            {
-                fprintf(stderr, "Option -v requires a single character argument");
-                exit(1);
-            }
-            verify = *optarg;
-            break;
-        case 'b':
-            end = 'b';
-            break;
-        case 'h':
-            usage(stdout);
-            exit(0);
-            break;
-        case 'H':
-            bcinheader = 1;
-            usefile1=1;
-            break;
-        case 'e':
-            end = 'e';
-            break;
-        case 'G':
-            group = optarg;
-            break;
-        case 'g':
-            guide = optarg;
-            in[f_n++] = optarg;
-            out[f_oarg++] = "n/a";
-            break;
-        case 'l':
-            list = optarg;
-            usefile1=0;
-            break;
-        case 'L':
-            list = optarg;
-            usefile1=1;
-            break;
-        case 'B':
-            bfil = optarg;
-            list = NULL;
-            break;
-        case 'x':
-            trim = false;
-            break;
-        case 'n':
-            noexec = true;
-            break;
-        case 't':
-            threshfactor = atof(optarg);
-            break;
-        case 'm':
-            mismatch = atoi(optarg);
-            break;
-        case 'd':
-            distance = atoi(optarg);
-            break;
-        case 'q':
-            quality = atoi(optarg);
-            break;
-        case 'D':
-            ++debug;
-            break;
-        case '?':
-            if (strchr("vmBglG", optopt))
-                fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-            else if (isprint(optopt))
-                fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-            else
-                fprintf (stderr,
-                         "Unknown option character `\\x%x'.\n",
-                         optopt);
-            usage(stderr);
-            return 1;
         }
     }
 
@@ -288,7 +288,7 @@ switch (c) t:
     {
         // use a list of barcode groups... determine the best set, then use the determined set
         struct bcg *bcg = (struct bcg *) malloc(sizeof(*bcg) * MAX_GROUP_NUM *
-                                                MAX_BARCODE_NUM);
+                MAX_BARCODE_NUM);
         if (!bcg)
         {
             fprintf(stderr, "Out of memory\n");
@@ -349,7 +349,7 @@ switch (c) t:
             bcg[bgcnt].b.seq.n=strlen(bcg[bgcnt].b.seq.s);
 
             if (debug) fprintf(stderr, "BCG: %d bc:%s n:%d\n", bgcnt, bcg[bgcnt].b.seq.s,
-                                   bcg[bgcnt].b.seq.n);
+                    bcg[bgcnt].b.seq.n);
             ++bgcnt;
         }
 
@@ -438,7 +438,7 @@ switch (c) t:
                         ++bcg[b].ecnt[i];
                     }
                     else if (ns > bcg[b].b.seq.n &&
-                             !strncasecmp(s+ns-bcg[b].b.seq.n-1, bcg[b].b.seq.s, bcg[b].b.seq.n))
+                            !strncasecmp(s+ns-bcg[b].b.seq.n-1, bcg[b].b.seq.s, bcg[b].b.seq.n))
                     {
                         ++bcg[b].escnt[i];
                     }
@@ -510,10 +510,10 @@ switch (c) t:
                 }
             }
             if (debug > 0) fprintf(stderr,"file-best %d sum:%d, max:%d\n", besti,
-                                       fsum[besti], fmax[besti]);
+                    fsum[besti], fmax[besti]);
             if (debug > 0 &&
                     bestdual) fprintf(stderr,"dual file-best %d sum:%d, max:%d\n", dbesti,
-                                          dfsum[dbesti], dfmax[dbesti]);
+                        dfsum[dbesti], dfmax[dbesti]);
         }
 
         // chosen file is "besti"
@@ -523,12 +523,12 @@ switch (c) t:
         int thresh = (int) (pickmaxpct*fmax[i]);
 
         if (debug > 0) fprintf(stderr,"besti: %d thresh: %d, dual: %d\n", besti, thresh,
-                                   bestdual);
+                bestdual);
         for (b=0; b<bgcnt; ++b)
         {
             int hcnt = (int) (max(bcg[b].bcnt[i],bcg[b].ecnt[i]) * log(bcg[b].b.seq.n));
             if (debug > 1) fprintf(stderr,"cnt: %s %s hc:%d bc:%d ec: %d\n", bcg[b].b.id.s,
-                                       bcg[b].b.seq.s, hcnt, bcg[b].bcnt[i], bcg[b].ecnt[i]);
+                    bcg[b].b.seq.s, hcnt, bcg[b].bcnt[i], bcg[b].ecnt[i]);
             if (hcnt >= thresh)
             {
                 // increase group count
@@ -545,7 +545,7 @@ switch (c) t:
             fprintf(stderr, "Unable to determine barcode group\n");
             exit(1);
         }
-//        printf("gmax: %d, gindex %d, %s, thresh: %d\n", gmax, gindex, grs[gindex].id, thresh);
+        //printf("gmax: %d, gindex %d, %s, thresh: %d\n", gmax, gindex, grs[gindex].id, thresh);
 
         for (b=0; b<bgcnt; ++b)
         {
@@ -577,7 +577,7 @@ switch (c) t:
         if (bestdual)
             thresh/=5;
 
-        // since this is a known good set, use a very low threshold, just to catch them all
+        //since this is a known good set, use a very low threshold, just to catch them all
         fprintf(stderr, "Using Barcode Group: %s on File: %s (%s), Threshold %2.2f%%\n",
                 grs[gindex].id, in[i], endstr(end),
                 100.0 * (float) ((float)thresh/THFIXFACTOR)/sampcnt);
@@ -605,7 +605,7 @@ switch (c) t:
             if (bcg[b].gptr->i == gindex)
             {
                 int cnt = (end == 'e' ? (bcg[b].ecnt[i]+bcg[b].escnt[i]) :
-                           ( bcg[b].bcnt[i] + bcg[b].bscnt[i] ));
+                        ( bcg[b].bcnt[i] + bcg[b].bscnt[i] ));
                 if (cnt > thresh/THFIXFACTOR)
                 {
                     // count exceeds threshold... use it
@@ -618,9 +618,9 @@ switch (c) t:
                             fprintf(stderr, "Using Barcode %s (%s)\n", bcg[b].b.id.s, bcg[b].b.seq.s);
 
                         if (debug) fprintf(stderr,
-                                               "Debug Barcode %s (%s-%s) ... ecnt:%d, escnt:%d,bcnt:%d, bscnt:%d\n",
-                                               bcg[b].b.id.s, bcg[b].b.seq.s, bcg[b].b.dual, bcg[b].ecnt[i], bcg[b].escnt[i],
-                                               bcg[b].bcnt[i], bcg[b].bscnt[i]);
+                                "Debug Barcode %s (%s-%s) ... ecnt:%d, escnt:%d,bcnt:%d, bscnt:%d\n",
+                                bcg[b].b.id.s, bcg[b].b.seq.s, bcg[b].b.dual, bcg[b].ecnt[i], bcg[b].escnt[i],
+                                bcg[b].bcnt[i], bcg[b].bscnt[i]);
 
                     }
                     else
@@ -633,8 +633,8 @@ switch (c) t:
 
                         if (debug)
                             printf("Debug Barcode %s (%s-%s) shifted ... ecnt:%d, escnt:%d,bcnt:%d, bscnt:%d\n",
-                                   bcg[b].b.id.s, bcg[b].b.seq.s, bcg[b].b.dual, bcg[b].ecnt[i], bcg[b].escnt[i],
-                                   bcg[b].bcnt[i], bcg[b].bscnt[i]);
+                                    bcg[b].b.id.s, bcg[b].b.seq.s, bcg[b].b.dual, bcg[b].ecnt[i], bcg[b].escnt[i],
+                                    bcg[b].bcnt[i], bcg[b].bscnt[i]);
                     }
                     ++bcnt;
                 }
@@ -692,7 +692,7 @@ switch (c) t:
         char *q = NULL;
         size_t nq = 0;
 
-// small sample to get lengths
+        // small sample to get lengths
         double tots=0, totsq=0;
         while ((ns=getline(&s, &na, gin)) > 0)
         {
@@ -861,7 +861,7 @@ switch (c) t:
             bc[bcnt].id.n=strlen(bc[bcnt].id.s);
             bc[bcnt].seq.n=strlen(bc[bcnt].seq.s);
             if (debug) fprintf(stderr, "BC: %d bc:%s n:%d\n", bcnt, bc[bcnt].seq.s,
-                                   bc[bcnt].seq.n);
+                    bc[bcnt].seq.n);
             ++bcnt;
         }
 
@@ -935,14 +935,14 @@ switch (c) t:
             {
                 int dok = 0;
                 if (debug > 1) fprintf(stderr, "check %s vs %s: %s vs %s", fq[0].id.s,
-                                           bc[i].id.s, fq[0].seq.s, bc[i].seq.s);
+                        bc[i].id.s, fq[0].seq.s, bc[i].seq.s);
                 if (!strncmp(fq[0].seq.s, bc[i].seq.s, bc[i].seq.n))
                 {
                     ++nb;
                     ++dok;
                 }
                 else if (!strncmp(fq[0].seq.s+fq[0].seq.n-bc[i].seq.n, bc[i].seq.s,
-                                  bc[i].seq.n))
+                            bc[i].seq.n))
                 {
                     ++ne;
                     ++dok;
@@ -956,7 +956,7 @@ switch (c) t:
                         ++dok;
                     }
                     else if (!strncmp(fq[1].seq.s+fq[1].seq.n-bc[i].dual_n, bc[i].dual,
-                                      bc[i].dual_n))
+                                bc[i].dual_n))
                     {
                         ++dne;
                         ++dok;
@@ -1116,7 +1116,7 @@ switch (c) t:
         if (read_ok < 0) continue;
 
         int i, best=-1, bestmm=mismatch+distance+1, bestd=mismatch+distance+1,
-               next_best=mismatch+distance*2+1;
+            next_best=mismatch+distance*2+1;
 
         if (bcinheader)
         {
@@ -1222,14 +1222,14 @@ switch (c) t:
                 next_best=bestd;
                 bestd=d;
                 if (debug > 1) fprintf(stderr,"next_dist: %d, best_seq: %s:%d\n", next_best,
-                                           bc[i].seq.s, bestd);
+                        bc[i].seq.s, bestd);
             }
             // if exact match
             if (d==0)
             {
                 if (debug) fprintf(stderr,
-                                       ", found bc: %d bc:%s n:%d, bestd: %d, next_best: %d", i, bc[i].seq.s,
-                                       bc[i].seq.n, bestd, next_best);
+                        ", found bc: %d bc:%s n:%d, bestd: %d, next_best: %d", i, bc[i].seq.s,
+                        bc[i].seq.n, bestd, next_best);
                 best=i;
                 break;
             }
@@ -1397,7 +1397,7 @@ void pickbest(const void *nodep, const VISIT which, const int depth)
     if (which==endorder || which==leaf)
     {
         bnode *ent = *(bnode **) nodep;
-//         printf("HERE!! %s, %d, %d\n", ent->seq, ent->cnt, pickmax);
+        //         printf("HERE!! %s, %d, %d\n", ent->seq, ent->cnt, pickmax);
         // allow one sample to be as much as 1/10 another, possibly too conservative
         if (ent->cnt > pickmax && bcnt < MAX_BARCODE_NUM)
         {
@@ -1481,7 +1481,7 @@ void getbcfromheader(struct fq *fq, struct fq *bc, char **s2, int *ns2)
     getbcfromheader(bc->seq.s, &(bc->seq.n), &(bc->qual.s), s2, ns2);
     bc->qual.n=bc->seq.n;
 
-//printf("DEBUG: seq is %s, length is %d\n", bc->seq.s, bc->seq.n);
+    //printf("DEBUG: seq is %s, length is %d\n", bc->seq.s, bc->seq.n);
 }
 
 // looks for barcode in s, totally replaces s with barcode only, sets ns to length
