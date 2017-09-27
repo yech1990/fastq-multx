@@ -33,65 +33,56 @@ int read_line(FILE *in, struct line &l)
 {
     l.n = getline(&l.s, &l.a, in);
     // win32 support
-    if (l.n>1 && (l.s[l.n-2]=='\r'))
+    if (l.n > 1 && (l.s[l.n - 2] == '\r'))
     {
-        l.s[l.n-2]='\n';
+        l.s[l.n - 2] = '\n';
         --l.n;
-        l.s[l.n]='\0';
+        l.s[l.n] = '\0';
     }
     return l.n;
 }
 
-char sempty[1]= {'\0'};
+char sempty[1] = {'\0'};
 int read_fq_sam(FILE *in, int rno, struct fq *fq, const char *name)
 {
     read_line(in, fq->id);
-
     while (fq->id.s[0] == '@')
     {
         // ignore header
         read_line(in, fq->id);
     }
-
     // id in first field
-    char *p=strchr(fq->id.s, '\t');
+    char *p = strchr(fq->id.s, '\t');
     if (!p) return 0;
-    *p='\0';
-
-
+    *p = '\0';
     // skip next 8 tabs
     int i;
-    for (i=0; p && *++p && (i<8); ++i)
+    for (i = 0; p && *++p && (i < 8); ++i)
     {
-        p=strchr(p,'\t');
+        p = strchr(p, '\t');
     }
     if (!p) return 0;
     // seq in next fieldi
-
-    fq->seq.s=p;
-    p=strchr(p,'\t');
+    fq->seq.s = p;
+    p = strchr(p, '\t');
     if (!p) return 0;
-    *p='\0';
-    fq->seq.n=p-fq->seq.s;
-
+    *p = '\0';
+    fq->seq.n = p - fq->seq.s;
     // qual next
-    fq->qual.s=p+1;
-    p=strchr(fq->qual.s,'\t');
+    fq->qual.s = p + 1;
+    p = strchr(fq->qual.s, '\t');
     if (!p)
-        p=strchr(fq->qual.s,'\n');
+        p = strchr(fq->qual.s, '\n');
     if (!p) return 0;
-    *p='\0';
-    fq->qual.n=p-fq->qual.s;
-
+    *p = '\0';
+    fq->qual.n = p - fq->qual.s;
     // fake comment
-    fq->com.s=sempty;
-    fq->com.n=0;
-
+    fq->com.s = sempty;
+    fq->com.n = 0;
     // mark allocation as pointer
-    fq->seq.a=0;
-    fq->qual.a=0;
-    fq->com.a=0;
-
+    fq->seq.a = 0;
+    fq->qual.a = 0;
+    fq->com.a = 0;
     return 1;
 }
 
@@ -105,12 +96,12 @@ int read_fq(FILE *in, int rno, struct fq *fq, const char *name)
         char c = fgetc(in);
         while (c != '>' && c != EOF)
         {
-            if (fq->seq.a <= (fq->seq.n+1))
+            if (fq->seq.a <= (fq->seq.n + 1))
             {
-                fq->seq.s=(char *)realloc(fq->seq.s, fq->seq.a=(fq->seq.a+16)*2);
+                fq->seq.s = (char *)realloc(fq->seq.s, fq->seq.a = (fq->seq.a + 16) * 2);
             }
             if (!isspace(c))
-                fq->seq.s[fq->seq.n++]=c;
+                fq->seq.s[fq->seq.n++] = c;
             c = fgetc(in);
         }
         if (c != EOF)
@@ -118,12 +109,12 @@ int read_fq(FILE *in, int rno, struct fq *fq, const char *name)
             ungetc(c, in);
         }
         // make it look like a fastq
-        fq->qual.s=(char *)realloc(fq->qual.s, fq->qual.a=(fq->seq.n+1));
+        fq->qual.s = (char *)realloc(fq->qual.s, fq->qual.a = (fq->seq.n + 1));
         memset(fq->qual.s, 'h', fq->seq.n);
-        fq->qual.s[fq->qual.n=fq->seq.n]=fq->seq.s[fq->seq.n]='\0';
-        fq->com.s=(char *)malloc(fq->com.a=2);
-        fq->com.n=1;
-        strcpy(fq->com.s,"+");
+        fq->qual.s[fq->qual.n = fq->seq.n] = fq->seq.s[fq->seq.n] = '\0';
+        fq->com.s = (char *)malloc(fq->com.a = 2);
+        fq->com.n = 1;
+        strcpy(fq->com.s, "+");
     }
     else
     {
@@ -131,7 +122,6 @@ int read_fq(FILE *in, int rno, struct fq *fq, const char *name)
         read_line(in, fq->com);
         read_line(in, fq->qual);
     }
-
     if (fq->qual.n <= 0)
         return 0;
     if (fq->id.s[0] != '@' || fq->com.s[0] != '+' || fq->seq.n != fq->qual.n)
@@ -141,22 +131,22 @@ int read_fq(FILE *in, int rno, struct fq *fq, const char *name)
         if (name)
         {
             fprintf(stderr, "Malformed fastq record (%s) in file '%s', line %d\n", errtyp,
-                    name, rno*2+1);
+                    name, rno * 2 + 1);
         }
         else
         {
-            fprintf(stderr, "Malformed fastq record (%s) at line %d\n", errtyp, rno*2+1);
+            fprintf(stderr, "Malformed fastq record (%s) at line %d\n", errtyp, rno * 2 + 1);
         }
         return -1;
     }
     // win32-safe chomp
     fq->seq.s[--fq->seq.n] = '\0';
-    if (fq->seq.s[fq->seq.n-1] == '\r')
+    if (fq->seq.s[fq->seq.n - 1] == '\r')
     {
         fq->seq.s[--fq->seq.n] = '\0';
     }
     fq->qual.s[--fq->qual.n] = '\0';
-    if (fq->qual.s[fq->qual.n-1] == '\r')
+    if (fq->qual.s[fq->qual.n - 1] == '\r')
     {
         fq->qual.s[--fq->qual.n] = '\0';
     }
@@ -169,7 +159,7 @@ struct qual_str
     long long int sum;
     long long int ssq;
     long long int ns;
-} quals[MAX_FILENO_QUALS+1] = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+} quals[MAX_FILENO_QUALS + 1] = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
 
 int gzclose(FILE *f, bool isgz)
 {
@@ -181,10 +171,10 @@ FILE *gzopen(const char *f, const char *m, bool*isgz)
     // maybe use zlib some day?
     FILE *h;
     const char * ext = fext(f);
-    if (!strcmp(ext,".gz"))
+    if (!strcmp(ext, ".gz"))
     {
-        char *tmp=(char *)malloc(strlen(f)+100);
-        if (strchr(m,'w'))
+        char *tmp = (char *)malloc(strlen(f) + 100);
+        if (strchr(m, 'w'))
         {
             strcpy(tmp, "gzip -3 --rsyncable > '");
             strcat(tmp, f);
@@ -197,13 +187,13 @@ FILE *gzopen(const char *f, const char *m, bool*isgz)
             strcat(tmp, "'");
         }
         h = popen(tmp, m);
-        *isgz=1;
+        *isgz = 1;
         free(tmp);
     }
-    else if (!strcmp(ext,".zip"))
+    else if (!strcmp(ext, ".zip"))
     {
-        char *tmp=(char *)malloc(strlen(f)+100);
-        if (strchr(m,'w'))
+        char *tmp = (char *)malloc(strlen(f) + 100);
+        if (strchr(m, 'w'))
         {
             strcpy(tmp, "zip -q '");
             strcat(tmp, f);
@@ -216,13 +206,13 @@ FILE *gzopen(const char *f, const char *m, bool*isgz)
             strcat(tmp, "'");
         }
         h = popen(tmp, m);
-        *isgz=1;
+        *isgz = 1;
         free(tmp);
     }
-    else if (!strcmp(ext,".dsrc")||!strcmp(ext,".dz"))
+    else if (!strcmp(ext, ".dsrc") || !strcmp(ext, ".dz"))
     {
-        char *tmp=(char *)malloc(strlen(f)+100);
-        if (strchr(m,'w'))
+        char *tmp = (char *)malloc(strlen(f) + 100);
+        if (strchr(m, 'w'))
         {
             // default 2x better compression and 3x better speed
             strcpy(tmp, "dsrc c -m0 -t2 -s '");
@@ -237,17 +227,17 @@ FILE *gzopen(const char *f, const char *m, bool*isgz)
             strcat(tmp, "'");
         }
         h = popen(tmp, m);
-        *isgz=1;
+        *isgz = 1;
         free(tmp);
     }
     else
     {
         h = fopen(f, m);
-        *isgz=0;
+        *isgz = 0;
     }
     if (!h)
     {
-        fprintf(stderr, "Error opening file '%s': %s\n",f, strerror(errno));
+        fprintf(stderr, "Error opening file '%s': %s\n", f, strerror(errno));
         exit(1);
     }
     return h;
@@ -255,43 +245,43 @@ FILE *gzopen(const char *f, const char *m, bool*isgz)
 
 const char *fext(const char *f)
 {
-    const char *x=strrchr(f,'.');
+    const char *x = strrchr(f, '.');
     return x ? x : "";
 }
 
 bool poorqual(int n, int l, const char *s, const char *q)
 {
-    int i=0, sum=0, ns=0;
-    for (i=0; i<l; ++i)
+    int i = 0, sum = 0, ns = 0;
+    for (i = 0; i < l; ++i)
     {
         if (s[i] == 'N')
             ++ns;
         quals[n].cnt++;
         quals[n].ssq += q[i] * q[i];
-        sum+=q[i];
+        sum += q[i];
     }
     quals[n].sum += sum;
     quals[n].ns += ns;
-    int xmean = sum/l;
+    int xmean = sum / l;
     if (quals[n].cnt < 20000)
     {
         // mean qual < 18 = junk
-        return ((xmean-33) < 18) || (ns > 1);
+        return ((xmean - 33) < 18) || (ns > 1);
     }
     // enough data? use stdev
     int pmean = quals[n].sum / quals[n].cnt;                       // mean q
     double pdev = stdev(quals[n].cnt, quals[n].sum, quals[n].ssq); // dev q
-    int serr = min(pmean/2,max(1, pdev/sqrt(l)));                  // stderr for length l
+    int serr = min(pmean / 2, max(1, pdev / sqrt(l)));             // stderr for length l
     // mean qual < min(18,peman-serr*3) = junk/skip it
     // cap low qual, because adapters often are low qual
     // but you still need to calculate something, in case we're doing ion/pacbio
-    int thr = min((33+18), (pmean - serr * 3));
+    int thr = min((33 + 18), (pmean - serr * 3));
     if (xmean < thr)
     {
         //fprintf(stderr, "POORQ xmean:%d, pmean:%d, pdev:%f, sqrt(l):%f, serr:%d, thr: %d, %s",xmean,pmean,pdev,sqrt(l),serr,thr,s);
         return 1;  // ditch it
     }
-    if (ns > (1+(l*quals[n].ns / quals[n].cnt)))     // 1 more n than average?
+    if (ns > (1 + (l * quals[n].ns / quals[n].cnt))) // 1 more n than average?
     {
         //fprintf(stderr, "POORQ: ns:%d, thr: %d\n",ns,(int)(1+(l*quals[n].ns / quals[n].cnt)));
         return 1;  // ditch it
@@ -305,36 +295,36 @@ void revcomp(struct fq *d, struct fq *s)
 {
     if (!d->seq.s)
     {
-        d->seq.s=(char *) malloc(d->seq.a=s->seq.n+1);
-        d->qual.s=(char *) malloc(d->qual.a=s->qual.n+1);
+        d->seq.s = (char *) malloc(d->seq.a = s->seq.n + 1);
+        d->qual.s = (char *) malloc(d->qual.a = s->qual.n + 1);
     }
     else if (d->seq.a <= s->seq.n)
     {
-        d->seq.s=(char *) realloc(d->seq.s, d->seq.a=(s->seq.n+1));
-        d->qual.s=(char *) realloc(d->qual.s, d->qual.a=(s->qual.n+1));
+        d->seq.s = (char *) realloc(d->seq.s, d->seq.a = (s->seq.n + 1));
+        d->qual.s = (char *) realloc(d->qual.s, d->qual.a = (s->qual.n + 1));
     }
     int i;
-    for (i=0; i<s->seq.n/2; ++i)
+    for (i = 0; i < s->seq.n / 2; ++i)
     {
-        char b=s->seq.s[i];
-        char q=s->qual.s[i];
+        char b = s->seq.s[i];
+        char q = s->qual.s[i];
         //printf("%d: %c, %c\n", i, comp(s->seq.s[s->seq.n-i-1]), s->qual.s[s->qual.n-i-1]);
-        d->seq.s[i]=comp(s->seq.s[s->seq.n-i-1]);
-        d->qual.s[i]=s->qual.s[s->qual.n-i-1];
+        d->seq.s[i] = comp(s->seq.s[s->seq.n - i - 1]);
+        d->qual.s[i] = s->qual.s[s->qual.n - i - 1];
         //printf("%d: %c, %c\n", s->seq.n-i-1, comp(b), q);
-        d->seq.s[s->seq.n-i-1]=comp(b);
-        d->qual.s[s->seq.n-i-1]=q;
+        d->seq.s[s->seq.n - i - 1] = comp(b);
+        d->qual.s[s->seq.n - i - 1] = q;
     }
     if (s->seq.n % 2)
     {
         //printf("%d: %c, %c\n", 1+s->seq.n/2, comp(s->seq.s[s->seq.n/2]));
-        d->seq.s[s->seq.n/2] = comp(s->seq.s[s->seq.n/2]);
-        d->qual.s[s->seq.n/2] = s->qual.s[s->seq.n/2];
+        d->seq.s[s->seq.n / 2] = comp(s->seq.s[s->seq.n / 2]);
+        d->qual.s[s->seq.n / 2] = s->qual.s[s->seq.n / 2];
     }
-    d->seq.n=s->seq.n;
-    d->qual.n=s->qual.n;
-    d->seq.s[s->seq.n]='\0';
-    d->qual.s[s->seq.n]='\0';
+    d->seq.n = s->seq.n;
+    d->qual.n = s->qual.n;
+    d->seq.s[s->seq.n] = '\0';
+    d->qual.s[s->seq.n] = '\0';
 }
 
 void free_line(struct line *l)
@@ -342,7 +332,7 @@ void free_line(struct line *l)
     if (l)
     {
         if (l->s) free(l->s);
-        l->s=NULL;
+        l->s = NULL;
     }
 }
 
@@ -395,10 +385,8 @@ int getstr (char ** lineptr, size_t *n, FILE * stream, char terminator,
     int nchars_avail;       /* Allocated but unused chars in *LINEPTR.  */
     char *read_pos;     /* Where we're reading into *LINEPTR. */
     int ret;
-
     if (!lineptr || !n || !stream)
         return -1;
-
     if (!*lineptr)
     {
         *n = 64;
@@ -406,18 +394,14 @@ int getstr (char ** lineptr, size_t *n, FILE * stream, char terminator,
         if (!*lineptr)
             return -1;
     }
-
     nchars_avail = *n - offset;
     read_pos = *lineptr + offset;
-
     for (;;)
     {
         register int c = getc (stream);
-
         /* We always want at least one char left in the buffer, since we
            always (unless we get an error while reading the first char)
            NUL-terminate the line buffer.  */
-
         assert(*n - nchars_avail == read_pos - *lineptr);
         if (nchars_avail < 1)
         {
@@ -425,7 +409,6 @@ int getstr (char ** lineptr, size_t *n, FILE * stream, char terminator,
                 *n *= 2;
             else
                 *n += 64;
-
             nchars_avail = *n + *lineptr - read_pos;
             *lineptr = (char *) realloc (*lineptr, *n);
             if (!*lineptr)
@@ -433,7 +416,6 @@ int getstr (char ** lineptr, size_t *n, FILE * stream, char terminator,
             read_pos = *n - nchars_avail + *lineptr;
             assert(*n - nchars_avail == read_pos - *lineptr);
         }
-
         if (c == EOF || ferror (stream))
         {
             /* Return partial line, if any.  */
@@ -442,18 +424,14 @@ int getstr (char ** lineptr, size_t *n, FILE * stream, char terminator,
             else
                 break;
         }
-
         *read_pos++ = c;
         nchars_avail--;
-
         if (c == terminator)
             /* Return the line.  */
             break;
     }
-
     /* Done - NUL terminate and return the number of chars read.  */
     *read_pos = '\0';
-
     ret = read_pos - (*lineptr + offset);
     return ret;
 }
@@ -479,27 +457,21 @@ ssize_t getline(char **lineptr, size_t *n, FILE *stream)
 char* strtok_r(char *str, const char *delim, char **nextp)
 {
     char *ret;
-
     if (str == NULL)
     {
         str = *nextp;
     }
-
     str += strspn(str, delim);
-
     if (*str == '\0')
     {
         return NULL;
     }
-
     ret = str;
     str += strcspn(str, delim);
-
     if (*str)
     {
         *str++ = '\0';
     }
-
     *nextp = str;
     return ret;
 }
